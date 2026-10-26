@@ -33,7 +33,7 @@
 
 ### 变更（Changed）
 
-- 目录结构由嵌套的 `prd-writer/prd-writer/...` 修正为单层：`prd-writer/SKILL.md`、`prd-writer/templates/`、`prd-writer/references/`、`prd-writer/scripts/`。
+- 目录结构由嵌套的 `prd-writer/prd-writer/...` 修正为单层：`prd-writer/SKILL.md`、`prd-writer/templates/`、`prd-writer/references/`、`prd-writer/examples/`、`prd-writer/scripts/`。
 - 技能目录名与 frontmatter 的 `name: prd-writer` 对齐；`license` 与仓库 LICENSE 一致为 MIT；版本号写入 `metadata`。
 - 功能点字段规范固化为 9 项且顺序固定（标题、更新时间、优先级、迭代版本、任务规划、功能描述、核心流程、具体说明、限制条件）。
 - 全局输出规范拆分为编号格式、不确定信息、更新时间、代码证据、交付格式、功能框架图、输出长度管理、原型图、文件命名等独立小节。

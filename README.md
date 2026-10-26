@@ -49,7 +49,7 @@ prd-skill/
 │   ├── SKILL.md                        # 技能入口：模式、工作流、门禁、禁止事项、参考索引
 │   ├── templates/
 │   │   └── prd-template.md             # 固定 PRD 模板：章节骨架、两列功能表、附录 A
-│   ├── prd-writer/references/                     # 按需加载的详细规范（7 个）
+│   ├── references/                     # 按需加载的详细规范（7 个）
 │   │   ├── code-analysis-guide.md      # 代码 → 功能盘点的扫描路径与证据规范
 │   │   ├── field-spec.md               # 功能点 9 个字段的写法与正反例
 │   │   ├── testcase-spec.md            # 测试用例 8 列、四类场景、覆盖规则
@@ -96,7 +96,7 @@ mkdir -p .trae/skills/prd-writer
 cp -R prd-skill/prd-writer/. .trae/skills/prd-writer/
 ```
 
-重复执行上述命令只会覆盖同名文件，不会产生 `prd-writer/prd-writer/` 嵌套目录。安装后 `.trae/skills/prd-writer/` 下应直接看到 `SKILL.md`、`templates/`、`prd-writer/references/`、`scripts/`。项目级技能随仓库提交后，团队成员克隆项目即可使用。
+重复执行上述命令只会覆盖同名文件，不会产生 `prd-writer/prd-writer/` 嵌套目录。安装后 `.trae/skills/prd-writer/` 下应直接看到 `SKILL.md`、`templates/`、`references/`、`examples/`、`scripts/`。项目级技能随仓库提交后，团队成员克隆项目即可使用。
 
 ### 4.2 TRAE 全局级安装
 
@@ -128,7 +128,7 @@ Compress-Archive -Path ./prd-writer/* -DestinationPath ./prd-writer.zip -Force
 
 ```bash
 # macOS / Linux：在仓库根目录执行
-cd prd-writer && zip -r ../prd-writer.zip SKILL.md templates references scripts && cd ..
+cd prd-writer && zip -r ../prd-writer.zip SKILL.md templates references examples scripts && cd ..
 ```
 
 直接压缩整个 `prd-writer` 文件夹，或直接上传 GitHub 下载的仓库归档，都会多套一层导致导入失败。先解压，再按上述命令重新打包。TraeWork 还接受扩展名为 `.skill` 的文件，把 zip 改名即可。

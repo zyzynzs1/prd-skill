@@ -29,7 +29,7 @@ Windows 使用 `python` 与 PowerShell 7；macOS 使用 `python3` 与 zsh；装�
 | python-docx | 链路 B 生成 Word | `python -c "import docx; print(docx.__version__)"` | `python -m pip install python-docx` |
 | openpyxl | 生成用例 xlsx | `python -c "import openpyxl"` | `python -m pip install openpyxl` |
 | pandoc | 链路 A 转换 | `pandoc --version` | Windows `winget install --id JohnMacFarlane.Pandoc -e`；macOS `brew install pandoc`；不可安装改走链路 B |
-| Node.js 与渲染工具 | 框架图渲染 | `node --version`<br>`markmap --version`<br>`mmdc --version` | `npm install -g markmap-cli`；失败改用 `npm install -g @mermaid-js/mermaid-cli` |
+| Node.js 与渲染工具 | 框架图渲染 | `node --version`<br>`mmdc --version`<br>`markmap --version` | `npm install -g @mermaid-js/mermaid-cli`；不可用时改用 `npm install -g markmap-cli` + 无头浏览器截图 |
 | 浏览器 | 无头截图 | Windows 默认路径 `C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe`<br>macOS `/Applications/Google Chrome.app/Contents/MacOS/Google Chrome` | 用已装浏览器手动截图 |
 | pywin32 | Word COM 嵌入对象 | `python -c "import win32com.client"` | `python -m pip install pywin32`；失败后执行 `python -m pywin32_postinstall -install` |
 | WPS Office / Microsoft Word | 打开与 OLE 嵌入 | Windows `Get-Command wps`；macOS `ls /Applications` | 安装 WPS 或 Office；只能打开时按第 7、8 节降级 |
@@ -218,7 +218,7 @@ open "~/Desktop/PRD.docx"                  # 用默认应用打开
 |---|---|---|---|
 | pandoc 不可用或转换失败 | `pandoc --version` 报不存在；转换退出码非 0 | 改走链路 B | 不标注（链路切换不影响质量） |
 | 自动多级编号未生效 | 标题序号为手动文本、无序号或无法续排 | 用链路 B 重建，或修正 reference.docx 编号绑定 | 不标注（必须修复，不得降级交付） |
-| markmap-cli 安装失败 | npm 报错或超时 | 改用 mermaid-cli，再不行手动截图 | 标注渲染方式 |
+| mermaid-cli 安装失败 | npm 报错或超时 | 改用 markmap-cli + 无头截图，再不行手动截图 | 标注渲染方式 |
 | 无头截图为空白 | PNG 尺寸异常或全白 | 增大 `--virtual-time-budget`、放大窗口重试；仍失败改手动截图 | 标注「手工截图」 |
 | pywin32 安装失败 | `import win32com.client` 报 ModuleNotFoundError | 执行 `python -m pywin32_postinstall -install`；仍失败改人工插入 | 标注嵌入方式 |
 | AddOLEObject 报 COM 异常 | 未安装 Excel 或 Word 版本不兼容 | 安装 Excel 后重试，或用 WPS 人工插入 | 标注「人工嵌入，需复核双击」 |

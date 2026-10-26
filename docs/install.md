@@ -79,7 +79,7 @@ Get-ChildItem ./.trae/skills/prd-writer | Select-Object -ExpandProperty Name
 ls .trae/skills/prd-writer
 ```
 
-输出中应直接看到 `SKILL.md`、`templates`、`references`、`scripts`。
+输出中应直接看到 `SKILL.md`、`templates`、`references`、`examples`、`scripts`。
 
 ### 3.2 全局级安装（所有项目可用）
 
@@ -214,10 +214,10 @@ Compress-Archive -Path ./prd-writer/* -DestinationPath ./prd-writer.zip -Force
 macOS / Linux（在仓库根目录执行）：
 
 ```bash
-cd prd-writer && zip -r ../prd-writer.zip SKILL.md templates references scripts && cd ..
+cd prd-writer && zip -r ../prd-writer.zip SKILL.md templates references examples scripts && cd ..
 ```
 
-打包后检查压缩包内容：第一层条目应包含 `SKILL.md`、`templates/`、`references/`、`scripts/`。若第一层只有 `prd-writer/`，说明多套了一层，导入会被拒绝或解析失败。
+打包后检查压缩包内容：第一层条目应包含 `SKILL.md`、`templates/`、`references/`、`examples/`、`scripts/`。若第一层只有 `prd-writer/`，说明多套了一层，导入会被拒绝或解析失败。
 
 常见错误：直接右键压缩整个 `prd-writer` 文件夹；或直接上传 GitHub 下载的仓库归档 `prd-skill-main.zip`。这两种包的第一层都不是 `SKILL.md`。正确做法是先解压，再进入 `prd-writer` 目录，按上面的命令重新打包其内容。
 

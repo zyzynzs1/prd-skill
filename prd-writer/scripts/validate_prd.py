@@ -9,8 +9,8 @@
 用法：
     python validate_prd.py <PRD.md> [<PRD2.md> ...]   # 校验 PRD 文件
     python validate_prd.py --skill prd-writer/SKILL.md  # 校验技能文件
-    python validate_prd.py --strict examples/PRD-*.md   # WARN 也视为失败
-    python validate_prd.py --json examples/PRD-*.md     # 输出 JSON
+    python validate_prd.py --strict prd-writer/examples/PRD-*.md   # WARN 也视为失败
+    python validate_prd.py --json prd-writer/examples/PRD-*.md     # 输出 JSON
 
 退出码：0 = 无 ERROR（--strict 时还需无 WARN）；1 = 存在失败项；2 = 用法/文件错误。
 
@@ -829,7 +829,7 @@ def print_report(report: Report, verbose: bool = True) -> None:
 def main(argv: Optional[Sequence[str]] = None) -> int:
     parser = argparse.ArgumentParser(
         description="PRD 结构校验器（prd-writer 技能配套工具）",
-        epilog="示例：python validate_prd.py examples/PRD-示例.md",
+        epilog="示例：python validate_prd.py prd-writer/examples/PRD-示例-在线考试系统.md",
     )
     parser.add_argument("files", nargs="+", help="待校验的 PRD Markdown 文件")
     parser.add_argument("--skill", action="store_true", help="按技能文件（SKILL.md）模式校验")
