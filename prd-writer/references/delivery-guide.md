@@ -4,7 +4,7 @@
 
 ## 目录
 
-1 交付物清单与生成顺序；2 依赖检查与安装；3 转换链路选择（含 3.1 docxtpl 推荐方案）；4 链路 A（pandoc）；5 链路 B（python-docx 自动多级编号）；6 功能框架图渲染为 PNG；7 测试用例嵌入 Excel 对象；8 生成后自动打开；9 失败降级策略；10 交付验证清单；11 交付说明话术模板。
+1 交付物清单与生成顺序；2 依赖检查与安装；3 转换链路选择（3.1 docxtpl；3.2 WPS 双应用嵌入）；4 链路 A（pandoc）；5 链路 B（python-docx 自动多级编号）；6 功能框架图渲染为 PNG；7 测试用例嵌入 Excel 对象；8 生成后自动打开；9 失败降级策略；10 交付验证清单；11 交付说明话术模板。
 
 ## 1. 交付物清单与生成顺序
 
@@ -14,7 +14,7 @@
 | 2 | Markdown 草稿（已确认） | .md | 起草阶段产出 | 质量门禁自查通过 |
 | 3 | 测试用例表（按需） | .xlsx | openpyxl，8 列表头 | 表头、序号、场景类型核对 |
 | 4 | Word 文档主体 | .docx | 链路 A / B / B2 | 第 10 节检查清单 |
-| 5 | 嵌入 Excel 对象的 Word | .docx | 第 7 节 COM 或人工 | 双击对象可编辑 |
+| 5 | 嵌入 Excel 对象的 Word | .docx | 第 7 节 COM 或第 3.2 节 WPS 双应用 | 双击对象可编辑 |
 | 6 | 自动打开 | — | 第 8 节命令 | 窗口可见 |
 
 顺序硬约束：先渲染 PNG 与生成 xlsx，再合成 docx；否则需二次打开文档插入，增加出错面。Markdown 草稿中以图片语法引用 framework.png，转换时直接嵌入。产物命名遵循 `PRD-{产品/模块}-V{x.y}.docx`，建议输出到 `docs/prd/`；用户指定路径时以用户为准。
@@ -38,12 +38,13 @@ Windows 使用 `python` 与 PowerShell 7；macOS 使用 `python3` 与 zsh；装�
 
 | 场景 | 推荐链路 | 原因 | 限制 |
 |---|---|---|---|
-| 要求「一、/1、/1.1 自动多级编号」「嵌入 Excel」且可准备一份 Word 模板 | B2：docxtpl + 预定义 Word 模板（优先推荐） | 编号与嵌入对象由 Word 模板预先定义，渲染只替换文本，保真最高、脚本最短 | 需先维护一份模板 .docx；模板样式与编号需一次性配好并复测 |
+| 要求「一、/1、/1.1 自动多级编号」「嵌入 Excel」，且本机只有 WPS | B3：WPS 文字 + WPS 表格双应用（见 3.2，无需 Microsoft Office） | 用 WPS 两个应用完成 OLE 嵌入；已验证可行 | 依赖 WPS COM；保存后需做每子功能编号重置后处理 |
+| 要求「一、/1、/1.1 自动多级编号」「嵌入 Excel」且可准备一份 Word 模板 | B2：docxtpl + 预定义 Word 模板 | 编号与嵌入对象由模板预先定义，渲染只替换文本 | 需先维护一份模板 .docx |
 | 结构标准、以标题与表格为主、接受参考样式 | A：pandoc + reference.docx | 一条命令转换，格式统一 | 自动多级编号需在 reference.docx 中预先绑定并实测 |
 | 无法准备模板、要求完全代码化生成 | B：python-docx 脚本 | 精确控制编号定义、缩进与样式绑定 | 需维护脚本；复杂表格逐项构建 |
 | 文档短、可接受人工排版 | C：Word/WPS 手工 | 零依赖 | 不可自动化，易漏编号 |
 
-选择规则：pandoc 默认输出不保证自动多级编号（见 pandoc issue #1413），因此除非已在 reference.docx 完成编号绑定并抽样验证，不要选链路 A。优先顺序为 **B2 docxtpl → B python-docx → A pandoc → C 手工**。
+选择规则：本机只有 WPS 时优先 B3（无需 Microsoft Office）；能维护 Word 模板时选 B2；pandoc 默认输出不保证自动多级编号（见 pandoc issue #1413），因此除非已在 reference.docx 完成编号绑定并抽样验证，不要选链路 A。其余场景按 **B3 → B2 docxtpl → B python-docx → A pandoc → C 手工** 选择。
 
 ### 3.1 链路 B2：docxtpl + 预定义 Word 模板（优先推荐）
 
@@ -56,6 +57,19 @@ Windows 使用 `python` 与 PowerShell 7；macOS 使用 `python3` 与 zsh；装�
 5. 验证：解压生成物检查 `word/embeddings/*.xlsx` 存在、`word/numbering.xml` 有编号定义；用 Word/WPS 打开确认标题编号自动显示、双击 Excel 对象可编辑。docxtpl 替换嵌入对象后缩略图可能仍是旧图，双击激活即可刷新，交付前须确认。
 
 优势：编号与对象都是 Word 自己产出的，不依赖手写 OOXML；缺点是需要维护模板文件，且模板样式变更需同步脚本。若无法维护模板，再按第 5 节用 python-docx 注入编号。
+
+### 3.2 链路 B3：WPS 文字 + WPS 表格双应用嵌入（无需 Microsoft Office，已验证）
+
+适用：本机只有 WPS（注册表存在 `KWPS.Application`、`KET.Application`），且必须满足「自动多级编号 + 嵌入 Excel 对象」。
+
+1. 用 python-docx 生成 Word 主体（标题、表格、框架图 PNG；测试用例位置保留占位段 `@@TESTCASE_OLE@@`）。标题编号可按第 5 节注入；不要依赖 Word 生成。
+2. WPS 文字打开 docx：`$writer = New-Object -ComObject KWPS.Application`，`$doc = $writer.Documents.Open("<docx>")`；**必须 `$writer.Visible = $true` 并 `$doc.Activate()`**，否则 `$doc.Selection` 为 null。
+3. WPS 表格打开 xlsx 并复制区域：`$sheet = New-Object -ComObject KET.Application`，`$worksheet.UsedRange.Copy()`。
+4. 在 WPS 文字中定位占位段、清空后执行 `$writer.Selection.PasteSpecial(0, $false, 0, $false, 0)`，把区域粘贴为 OLE 对象；`$doc.SaveAs("<docx>", 16)` 保存。
+5. **编号重置后处理（必做）**：WPS 保存会把同一 `abstractNum` 的列表归并成一个 `numId`，导致不同子功能的「具体说明」「限制条件」连续编号。保存后须遍历功能表，为每个子功能克隆独立的 `abstractNum` + `numId`（各层 `w:start=1`），并把该子功能的列表段落重新挂到自己的 `numId`。
+6. 验收：解压 docx 检查 `word/embeddings/oleObject1.bin`、`<o:OLEObject ... ProgID="Excel.Sheet.12">`、`word/media/image1.png`；确认每个子功能的「具体说明」「限制条件」`numId` 互不相同且 `w:start=1`；最后用 WPS 打开，双击对象确认可编辑。
+
+注意：WPS 文字 COM 的 `InlineShapes.AddOLEObject` 不支持（返回 E_FAIL），不要走该 API；跨应用剪贴板粘贴是已验证的替代。WPS 进程会附加到用户已打开的实例，自动化前先记录进程 ID，结束后只清理本次新建的进程，避免影响用户正在编辑的文档。
 
 ## 4. 链路 A：pandoc + reference.docx
 
@@ -186,7 +200,7 @@ doc.Save(); doc.Close(False); word.Quit()
 ```
 
 4. 验证嵌入成功：解压检查 `word/embeddings/` 是否含 xlsx、`word/numbering.xml` 是否有编号定义（`python -c "import zipfile; z=zipfile.ZipFile('PRD.docx'); print([n for n in z.namelist() if 'embeddings' in n], 'word/numbering.xml' in z.namelist())"`）；再打开 Word 双击对象，确认可编辑、可筛选。
-5. WPS 兼容性：WPS 文字 COM ProgID 通常为 `KWPS.Application`（大小写随版本可能不同，使用前查注册表），但 `InlineShapes.AddOLEObject` 在 WPS 中支持不完整，行为可能与 Word 不一致。推荐在装有 Microsoft Word 的环境完成嵌入，再用 WPS 打开验证显示与双击；只有 WPS 时人工插入：WPS 文字 → 插入 → 对象 → 由文件创建 → 选择 xlsx → 取消勾选「显示为图标」→ 确定。
+5. WPS 兼容性：WPS 文字 COM 不支持 `InlineShapes.AddOLEObject`（返回 E_FAIL）。已验证的 WPS 原生做法见 3.2「WPS 文字 + WPS 表格双应用」：WPS 表格复制区域 → WPS 文字 `Selection.PasteSpecial` 粘贴为 OLE 对象，全程无需 Microsoft Office。若以上均不可用，再人工插入：WPS 文字 → 插入 → 对象 → 由文件创建 → 选择 xlsx → 取消勾选「显示为图标」→ 确定。
 6. 降级：COM 与人工均不可用时，将 xlsx 作为独立附件交付，Word 附件位写「【测试用例未嵌入：见附件〈文件名〉】」，并在交付说明中明确原因，由用户决定是否接受。
 7. 替代方案（半自动，纯 Python）：用 docxtpl 的 `replace_zipname` / `replace_embedded` 替换模板中预置的嵌入 xlsx——先人工制作含占位嵌入对象的模板 .docx，生成时由 Python 替换，生成端无需 COM。优先 `replace_zipname`（Word 保存过的模板对 Excel 类嵌入对象可能出现 CRC 不匹配），`replace_embedded` 作为对象名匹配时的备选。该能力仅对嵌入的 Office 文件有效，使用前须在目标机器小样验证。
 

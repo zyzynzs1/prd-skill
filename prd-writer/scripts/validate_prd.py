@@ -48,7 +48,6 @@ FEATURE_TABLE_HEADER = ["原型展示图", "功能描述"]
 ROLE_TABLE_HEADER = ["角色", "权限与使用场景"]
 ITER_PLAN_HEADER = ["迭代", "时间范围", "发布目标"]
 REVISION_HEADER = ["版本", "日期", "修改人", "变更内容"]
-PENDING_HEADER = ["序号", "文档位置", "待确认问题", "影响", "建议确认人"]
 TESTCASE_REQUIRED = ["序号", "关联功能点", "用例名称", "场景类型", "前置条件", "测试步骤", "预期结果", "优先级"]
 
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
@@ -211,9 +210,11 @@ def parse_headings(lines: Sequence[str]) -> List[Heading]:
     return out
 
 
-def section_bounds(headings: Sequence[Heading], title_line: int, level: int) -> Tuple[int, int]:
+def section_bounds(headings: Sequence[Heading], title_line: int, level: int,
+                   total_lines: int | None = None) -> Tuple[int, int]:
     """返回标题行之后、同级下一个标题之前的行号区间（1 基，含首尾行号）。"""
-    end = len(headings)
+    end = (total_lines + 1) if total_lines is not None else (
+        max((h.line for h in headings), default=title_line) + 1)
     for h in headings:
         if h.line > title_line and h.level <= level:
             end = h.line
@@ -261,6 +262,7 @@ def check_top_sections(rep: Report, headings: Sequence[Heading], lines: Sequence
         if any(h.text.startswith(r) for r in REQUIRED_TOP_SECTIONS):
             continue
         if h.text.startswith("附录"):
+            rep.add(WARN, "G1-结构", "v2.0 已取消「附录 A、待确认清单」；未确认内容应内联在正文并标红", h.line)
             continue
         rep.add(WARN, "G1-结构", f"出现模板之外的顶级章节「{h.text}」", h.line)
     ordered = [next((h for h in h2 if h.text.startswith(r)), None) for r in REQUIRED_TOP_SECTIONS]
@@ -273,7 +275,7 @@ def check_background_sections(rep: Report, headings: Sequence[Heading], lines: S
     bg = find_heading(headings, lambda h: h.level == 2 and h.text.startswith("一、产品需求背景"))
     if not bg:
         return
-    start, end = section_bounds(headings, bg.line, 2)
+    start, end = section_bounds(headings, bg.line, 2, len(lines))
     patched = [h for h in headings if h.level == 3 and start <= h.line <= end]
     names = [h.text for h in patched]
     for required in REQUIRED_BG_SECTIONS:
@@ -528,7 +530,7 @@ def check_body(rep: Report, headings: Sequence[Heading], tables: Sequence[Table]
     body = find_heading(headings, lambda h: h.level == 2 and h.text.startswith("三、功能详细描述"))
     if not body:
         return
-    start, end = section_bounds(headings, body.line, 2)
+    start, end = section_bounds(headings, body.line, 2, len(lines))
     body_headings = [h for h in headings if start <= h.line <= end]
     iterations = [h for h in body_headings if h.level == 4]
     if not iterations:
@@ -638,15 +640,15 @@ def check_consistency(rep: Report) -> None:
 
 
 def check_pending(rep: Report, lines: Sequence[str], tables: Sequence[Table]) -> None:
+    """v2.0：取消附录 A 汇总表，【待确认】直接内联在正文，Word 中红色显示。"""
     text = "\n".join(lines)
     pending_count = len(re.findall(r"【待确认", text))
-    appendix = next((t for t in tables if t.header == PENDING_HEADER), None)
-    if pending_count and not appendix:
-        rep.add(ERROR, "G5-待确认", f"正文存在 {pending_count} 处【待确认】，但缺少「附录 A、待确认清单」表")
-    if appendix and not appendix.rows:
-        rep.add(WARN, "G5-待确认", "附录 A 待确认清单没有数据行")
+    if pending_count:
+        rep.add(INFO, "G5-待确认", f"正文内联【待确认】标注 {pending_count} 处（Word 交付时须以红色字体显示）")
+    # 兼容检查：若仍出现旧的附录 A 汇总表，给出提醒
+    appendix = next((t for t in tables if t.header == ["序号", "文档位置", "待确认问题", "影响", "建议确认人"]), None)
     if appendix:
-        rep.add(INFO, "G5-待确认", f"待确认清单记录 {len(appendix.rows)} 条，正文【待确认】标注 {pending_count} 处")
+        rep.add(WARN, "G5-待确认", "v2.0 已取消「附录 A、待确认清单」汇总表，待确认项应直接内联在正文并标红")
 
 
 def check_placeholders(rep: Report, lines: Sequence[str]) -> None:
