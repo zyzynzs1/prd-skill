@@ -110,6 +110,7 @@ p.paragraph_format.space_after = Pt(0)
 
 - 页码：设置 `w:evenAndOddHeaders`，奇数页页脚右对齐、偶数页左对齐，内容为 `— PAGE 域 —`，宋体 10.5 pt。
 - 表格：`table.autofit = False`，按内容设置列宽；表头行设置 `tblHeader`；单元格段落单倍行距。
+- **图片段落必须单倍行距**：Normal 样式若为固定行距，内嵌图片会被裁切成一条缝（Word/WPS 均如此）；内嵌图片所在段落需 `line_spacing_rule = SINGLE`、段前段后 0。
 - 交付前用真实字体环境打开核对；字体缺失按回退链处理并记录。
 
 ## 6. 交付验收清单（版式）

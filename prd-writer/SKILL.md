@@ -4,7 +4,7 @@ description: 为已有代码仓库反向生成、补全、更新或评审产品�
 license: MIT
 metadata:
   author: zyzynzs1
-  version: "2.1.1"
+  version: "2.1.2"
   repository: https://github.com/zyzynzs1/prd-skill
 ---
 
