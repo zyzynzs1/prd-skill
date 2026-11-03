@@ -4,7 +4,7 @@ description: 为已有代码仓库反向生成、补全、更新或评审产品�
 license: MIT
 metadata:
   author: zyzynzs1
-  version: "2.0.0"
+  version: "2.1.0"
   repository: https://github.com/zyzynzs1/prd-skill
 ---
 
@@ -142,7 +142,7 @@ Markdown。标题层级与编号严格遵循模板：一、二、三 → 1、2�
 
 ### 4.6 交付格式
 
-最终交付物为 Word 文档（`.docx`）。流程：先产出 Markdown 草稿并经用户确认，再转换为 Word；转换后标题层级、编号、加粗等格式须完整保留。各级标题与「具体说明」条目序号在 Word 中必须使用**自动多级编号**（不得手打数字文本），使全文复制到钉钉文档后序号仍可自动续排（交付前按 `references/delivery-guide.md` 实测一次）。测试用例部分**不以 Word 原生表格或 Markdown 表格交付**，须以嵌入的 Excel 对象（Embedded Microsoft Excel Worksheet）插入对应位置，保留 8 列表头与排序规则，使 QA 可直接在 Word 内双击编辑、筛选、导出。**每次生成完成后，必须立即用 WPS 打开该 .docx**：先探测本机 WPS 可执行文件（不要假设 `wps` 在 PATH 中），探测不到时用系统默认应用或 Word 打开，并在交付说明中写明实际使用的应用。
+最终交付物为 Word 文档（`.docx`）。流程：先产出 Markdown 草稿并经用户确认，再转换为 Word；转换后标题层级、编号、加粗等格式须完整保留。各级标题与「具体说明」条目序号在 Word 中必须使用**自动多级编号**（不得手打数字文本），使全文复制到钉钉文档后序号仍可自动续排（交付前按 `references/delivery-guide.md` 实测一次）。测试用例部分**只以「嵌入 Excel 附件」形式进入 Word**：每个迭代生成 1 个 xlsx（4 个工作表：正常流程 / 异常操作 / 边界条件 / 权限校验，8 列表头），以 Embedded Microsoft Excel Worksheet 对象插入该迭代附件位，并保留 8 列表头与排序规则，使 QA 可直接在 Word 内双击编辑、筛选、导出；**Word 正文与附录区不得出现任何用例表格、用例截图或 Markdown 表格**，用例条数增加不得增加 Word 页数。**公文格式排版（强制）**：Word 交付物按《党政机关公文格式》（GB/T 9704-2012）排版——A4，页边距上 3.7 / 下 3.5 / 左 2.8 / 右 2.6 cm；文档标题二号方正小标宋简体居中；正文三号仿宋_GB2312、首行缩进 2 字、固定行距 28.5 磅（约每面 22 行）；一级标题三号黑体、二级标题三号楷体_GB2312、三级标题三号仿宋加粗、四级标题三号仿宋；数字与英文用 Times New Roman；页码四号半角宋体、`— 1 —`、奇右偶左；表格五号、表头黑体。完整规则、PRD 层级映射、实现代码与验收清单见 `references/gongwen-format.md`，交付前逐项核对。**每次生成完成后，必须立即用 WPS 打开该 .docx**：先探测本机 WPS 可执行文件（不要假设 `wps` 在 PATH 中），探测不到时用系统默认应用或 Word 打开，并在交付说明中写明实际使用的应用。
 
 ### 4.7 功能框架图
 
@@ -251,6 +251,7 @@ PRD 必须包含「功能框架图」小节。Markdown 草稿阶段以 markmap �
 | `references/interview-guide.md` | 阶段 2 | 分层问题库、提问话术、默认值策略、访谈记录模板 |
 | `references/review-guide.md` | 模式 C | 评审维度、问题分级、报告模板、常见问题库 |
 | `references/delivery-guide.md` | 阶段 6 | Markdown→Word、markmap 渲染、嵌入 Excel、WPS 打开、降级方案 |
+| `references/gongwen-format.md` | 阶段 6（转 Word 前必读） | 公文格式：页边距、字体字号、行距、页码、表格/图片/附件版式、PRD 层级映射、实现与验收清单 |
 | `references/quality-checklist.md` | 阶段 5 | 全量逐项检查清单（比本文件第 7 节更细） |
 | `scripts/validate_prd.py` | 阶段 5（可选） | PRD 结构/编号/字段/一致性自动校验 |
 | `examples/` | 需要示例时 | 功能盘点示例、精简 PRD 示例（随技能目录安装，位于 `prd-writer/examples/`） |
