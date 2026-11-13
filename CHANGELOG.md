@@ -6,6 +6,17 @@
 
 ---
 
+## [2.3.0] - 2026-11-13
+
+### 新增/变更（Added / Changed）
+
+- **去 AI 味写作（`references/writing-style.md`）**：一句话判据、Tier1/Tier2 词表、六种必改句式、PRD 四个高危位置、框架图节点五条、验收四条；功能描述/具体说明/框架节点均适用。
+- **功能框架图升级为五级**：版本 → 迭代 → 大功能点 → 子功能 → 能力点（x.y.z）；节点多时按迭代拆分页面或另附可缩放图。
+- **Word 标题样式**：必须使用内置「标题 1~4」与「标题」样式，再叠加公文字体字号，保留导航/目录/大纲能力。
+- `SKILL.md` §4.6、`references/gongwen-format.md` 第 8 条、`references/field-spec.md`、`quality-checklist.md` I 节同步；版本号统一为 `2.3.0`。
+
+---
+
 ## [2.2.0] - 2026-11-10
 
 ### 新增/变更（Added / Changed）
